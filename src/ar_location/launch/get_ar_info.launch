@@ -7,6 +7,12 @@
   <arg name="cam_info_topic"       default="/camera/rgb/camera_info" />
   <arg name="output_frame"         default="/camera_rgb_optical_frame" />
 
+  <!--创建二维码世界-->
+  <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch">
+    <arg name="world_file" value="/home/haiden/worlds/marker.world" />
+  </include>
+
+
   <node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen">
     <param name="marker_size"          type="double" value="$(arg marker_size)" />
     <param name="max_new_marker_error" type="double" value="$(arg max_new_marker_error)" />

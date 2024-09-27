@@ -129,6 +129,9 @@ bool arLocation::isCloseEnough(myPoint* current_piont)
     return true;
 }
 
+double square(double n) {
+    return n * n;
+}
 
 // 订阅 /ar_pose_marker 话题的回调函数
 void arLocation::markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg)
@@ -148,8 +151,8 @@ void arLocation::markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstP
             double y_ar1 = msg->markers[0].pose.pose.position.y;
             double z_ar1 = msg->markers[0].pose.pose.position.z;
             // 计算Turtlebot2的移动距离
-            double distance = 0.0;
-            ROS_INFO("Measurement: %.2f", distance);
+            double distance = sqrt(square(x_ar1 - x_ar0) + square(y_ar1 - y_ar0) + square(z_ar1 - z_ar0));
+            ROS_INFO("distance: %.2f", distance);
             exit(0);
         }
     }

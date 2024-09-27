@@ -22,15 +22,26 @@ int main(int argc, char** argv)
 
 void markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg)
 {
-    // 识别到二维码
+    // 璇嗗埆鍒颁簩缁寸爜
     if (msg->markers.size() > 0)
     {
-        // 二维码中心点相对相机坐标系的x坐标、y坐标和z坐标
+        // 浜岀淮鐮佷腑蹇冪偣鐩稿鐩告満鍧愭爣绯荤殑x鍧愭爣銆亂鍧愭爣鍜寊鍧愭爣
         double x_ar, y_ar, z_ar;  
         x_ar = msg->markers[0].pose.pose.position.x;
         y_ar = msg->markers[0].pose.pose.position.y;
         z_ar = msg->markers[0].pose.pose.position.z;
         ROS_INFO("x_ar: %.4f, y_ar: %.4f, z_ar: %.4f", x_ar, y_ar, z_ar);
+
+        int id;
+        id = msg->markers[0].id;
+        ROS_INFO("id: %d", id);
+
+        double x, y, z, w;
+        x = msg->markers[0].pose.pose.orientation.x;
+        y = msg->markers[0].pose.pose.orientation.y;
+        z = msg->markers[0].pose.pose.orientation.z;
+        w = msg->markers[0].pose.pose.orientation.w;
+        ROS_INFO("x: %.4f, y: %.4f, z: %.4f, w: %.4f", x, y, z, w);
     }
 }
 

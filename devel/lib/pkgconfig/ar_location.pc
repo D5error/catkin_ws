@@ -1,0 +1,8 @@
+prefix=/home/haiden/catkin_ws/devel
+
+Name: ar_location
+Description: Description of ar_location
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

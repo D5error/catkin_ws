@@ -4,8 +4,11 @@
     catkin_make
 
 * 打开世界
-    * create a empty world
+    * 空世界
         roslaunch turtlebot_gazebo turtlebot_world.launch world_file:=/home/haiden/worlds/empty.world
+
+    * 二维码世界
+        roslaunch turtlebot_gazebo turtlebot_world.launch world_file:=/home/haiden/worlds/marker.world
 
 * 运行节点
     * velocity publisher
@@ -17,12 +20,18 @@
 * 键盘控制
     roslaunch turtlebot_teleop keyboard_teleop.launch
 
-* 运行启动文件
+* 运行启动文件（不用手动创建世界）
     * learning topic
         roslaunch learning_topic learning_topic.launch
 
     * 矩形
         roslaunch trajectory_following rectangle.launch
+
+    * 识别二维码信息
+        roslaunch ar_location get_ar_info.launch
+
+    * 向二维码走
+        roslaunch ar_location ar_location.launch
 
 * USB连接机器人
     * 检查机器人是否连接成功
@@ -43,3 +52,5 @@
     * 跟着人走
         roslaunch turtlebot_follower follower.launch
 
+    * 向二维码走
+        roslaunch ar_location ar_location.launch marker_size:=14
