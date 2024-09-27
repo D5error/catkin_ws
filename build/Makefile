@@ -698,6 +698,32 @@ nav_msgs_generate_messages_py/fast:
 	$(MAKE) -f learning_topic/CMakeFiles/nav_msgs_generate_messages_py.dir/build.make learning_topic/CMakeFiles/nav_msgs_generate_messages_py.dir/build
 .PHONY : nav_msgs_generate_messages_py/fast
 
+#=============================================================================
+# Target rules for targets named show_trajectory
+
+# Build rule for target.
+show_trajectory: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 show_trajectory
+.PHONY : show_trajectory
+
+# fast build rule for target.
+show_trajectory/fast:
+	$(MAKE) -f show_trajectory/CMakeFiles/show_trajectory.dir/build.make show_trajectory/CMakeFiles/show_trajectory.dir/build
+.PHONY : show_trajectory/fast
+
+#=============================================================================
+# Target rules for targets named rectangle
+
+# Build rule for target.
+rectangle: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rectangle
+.PHONY : rectangle
+
+# fast build rule for target.
+rectangle/fast:
+	$(MAKE) -f trajectory_following/CMakeFiles/rectangle.dir/build.make trajectory_following/CMakeFiles/rectangle.dir/build
+.PHONY : rectangle/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -752,6 +778,8 @@ help:
 	@echo "... geometry_msgs_generate_messages_eus"
 	@echo "... actionlib_msgs_generate_messages_py"
 	@echo "... nav_msgs_generate_messages_py"
+	@echo "... show_trajectory"
+	@echo "... rectangle"
 .PHONY : help
 
 
