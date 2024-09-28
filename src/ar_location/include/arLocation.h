@@ -39,9 +39,20 @@ class arLocation
     double x_ar0, y_ar0, z_ar0;
 
 
+    
+    int count; // 行走总次数
+    
+    int currentCount; // 当前行走次数
+
+    double totalDistance; // 总距离
+
+    bool isMoveForward; // 是否往前走，如果不是则倒车
+
+    bool isOver; // 是否走完
+
 public:
     // 构造函数
-    arLocation(ros::Publisher vel_pub_, double target_distance_,
+    arLocation(ros::Publisher vel_pub_, int count_, double target_distance_,
                     double T_Kp_, double T_Kd_, double R_Kp_, double R_Kd_);
 
     // 析构函数
@@ -58,6 +69,8 @@ public:
 
     // 判断是否到达目标位置或角度
     bool isCloseEnough(myPoint* current_piont);
+
+    double square(double n);
 
     // PD控制器计算速度
     double calculatePD(double current, double last, double target, double dt, double Kp, double Kd);

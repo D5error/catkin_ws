@@ -14,9 +14,9 @@ int main(int argc,char **argv)
     ros::Publisher vel_pub = nh.advertise<geometry_msgs::Twist>(
         "/mobile_base/commands/velocity", 10);
     
+    
     // 设置循环的频率 
     ros::Rate loop_rate(10); 
-    
     while (ros::ok())
     {
         // 初始化geometry_msgs::Twist类型的消息 
@@ -27,6 +27,7 @@ int main(int argc,char **argv)
         
         // 发布消息
         vel_pub.publish(vel_msg);
+        
         ROS_INFO("Publish Turtlebot2 velocity command[%0.2f m/s, %0.2f rad/s]", 
             vel_msg.linear.x, vel_msg.angular.z);
         

@@ -1,6 +1,7 @@
 <launch>
 
-  <arg name="target_distance"  default="1.2" />
+  <arg name="target_distance"  default="1.6" />
+  <arg name="count" default="3" />
   <arg name="t_kp"             default="2.580" />
   <arg name="t_kd"             default="0.047" />
   <arg name="r_kp"             default="2.200" />
@@ -32,6 +33,7 @@
   </node>
 
   <param name="target_distance"   type="double"  value="$(arg target_distance)"  />
+  <param name="count"   type="int"  value="$(arg count)"  />
   <param name="t_kp"   type="double"  value="$(arg t_kp)"  />
   <param name="t_kd"   type="double"  value="$(arg t_kd)"  />
   <param name="r_kp"   type="double"  value="$(arg r_kp)"  />

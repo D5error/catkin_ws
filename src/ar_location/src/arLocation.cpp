@@ -1,7 +1,7 @@
 #include "arLocation.h"
 
 // 构造函数
-arLocation::arLocation(ros::Publisher vel_pub_, double target_distance_,
+arLocation::arLocation(ros::Publisher vel_pub_, int count_, double target_distance_,
                         double T_Kp_, double T_Kd_, double R_Kp_, double R_Kd_)
 {
     // Turtlebot2的速度发布者
@@ -26,6 +26,18 @@ arLocation::arLocation(ros::Publisher vel_pub_, double target_distance_,
     begin_measured = false;  // 出发前是否已经实现一次二维码定位
     move           = false;  // Turtlebot2是否开始移动
     isArrived      = false;  // Turtlebot2是否已经到达终点
+
+
+
+    count = count_; // 行走总次数
+    
+    currentCount = 1; // 当前行走次数
+
+    totalDistance = 0.0; // 总距离
+
+    isMoveForward = true; // 是否往前走，如果不是则倒车
+
+    isOver = false; // 是否走完
 }
 
 
@@ -39,10 +51,8 @@ arLocation::~arLocation()
 void arLocation::publishVelMsg(double linear_speed, double angular_speed)
 {
     geometry_msgs::Twist vel_msg;
-
     vel_msg.linear.x = linear_speed;
     vel_msg.angular.z = angular_speed;
-
     vel_pub.publish(vel_msg);
 }
 
@@ -50,6 +60,9 @@ void arLocation::publishVelMsg(double linear_speed, double angular_speed)
 // 订阅 /odom 话题的回调函数
 void arLocation::odomCallback(const nav_msgs::Odometry::ConstPtr& msg) 
 {
+    if (isOver) {
+        return;
+    }
     if (begin_measured && !isArrived)
     {
         // 四元数转换为欧拉角（获取Turtlebot2的朝向角theta = yaw）
@@ -69,7 +82,6 @@ void arLocation::odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
         {
             start_point->copyFrom(current_piont);
             last_point->copyFrom(current_piont);
-
             ROS_INFO("Going Straight");
             move = true;
         }
@@ -78,7 +90,13 @@ void arLocation::odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
         { 
             publishVelMsg(0.0, 0.0);
             ROS_INFO("Arrived");
+            start_point->copyFrom(current_piont);
             isArrived = true;
+            if (isMoveForward) {
+                isMoveForward = false;
+            } else {
+                isMoveForward = true;
+            } 
         }
 
 
@@ -103,9 +121,11 @@ void arLocation::odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
         angular_speed = calculatePD(current_diff, last_diff, target_angle, dt, R_Kp, R_Kd);
 
 
+        int tmp = isMoveForward == true ? 1 : -1;
+        linear_speed = tmp * fmin(linear_speed, MAX_LINEAR_SPEED);
+
         // 发布速度信息
-        publishVelMsg(fmin(MAX_LINEAR_SPEED, linear_speed), fmin(MAX_ANGULAR_SPEED, angular_speed));
-        
+        publishVelMsg(linear_speed, fmin(angular_speed, MAX_ANGULAR_SPEED));
         // 更新
         last_point->copyFrom(current_piont);
     }
@@ -129,7 +149,7 @@ bool arLocation::isCloseEnough(myPoint* current_piont)
     return true;
 }
 
-double square(double n) {
+double arLocation::square(double n) {
     return n * n;
 }
 
@@ -144,7 +164,8 @@ void arLocation::markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstP
             y_ar0 = msg->markers[0].pose.pose.position.y;
             z_ar0 = msg->markers[0].pose.pose.position.z;
             begin_measured = true;
-        }    
+        }
+
         if (isArrived)
         {
             double x_ar1 = msg->markers[0].pose.pose.position.x;
@@ -152,8 +173,19 @@ void arLocation::markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstP
             double z_ar1 = msg->markers[0].pose.pose.position.z;
             // 计算Turtlebot2的移动距离
             double distance = sqrt(square(x_ar1 - x_ar0) + square(y_ar1 - y_ar0) + square(z_ar1 - z_ar0));
-            ROS_INFO("distance: %.2f", distance);
-            exit(0);
+            ROS_INFO("No.%d, distance: %.2f", this->currentCount, distance);
+
+            move = false;
+            totalDistance += distance;
+            currentCount++;
+            isArrived = false;
+            begin_measured = false;
+
+            if (this->currentCount > this->count) {
+                double averageDistance = this->totalDistance / this->count;
+                ROS_INFO("average distance: %.2f", averageDistance);
+                this->isOver = true;
+            }
         }
     }
 }
