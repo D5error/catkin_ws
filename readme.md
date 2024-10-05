@@ -54,3 +54,9 @@
 
     * 向二维码走
         roslaunch ar_location ar_location.launch marker_size:=14
+
+    * 实际场景建图
+        roslaunch turtlebot_bringup minimal.launch
+        roslaunch turtlebot_navigation gmapping_demo.launch
+        roslaunch turtlebot_rviz_launchers view_navigation.launch
+        roslaunch turtlebot_teleop keyboard_teleop.launch
