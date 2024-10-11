@@ -20,12 +20,15 @@
 * 键盘控制
     roslaunch turtlebot_teleop keyboard_teleop.launch
 
-* 运行启动文件（不用手动创建世界）
+* 运行启动文件
     * learning topic
         roslaunch learning_topic learning_topic.launch
 
     * 矩形
         roslaunch trajectory_following rectangle.launch
+
+    * fourth
+        roslaunch fourth fourth.launch
 
     * 识别二维码信息
         roslaunch ar_location get_ar_info.launch

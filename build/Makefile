@@ -790,6 +790,19 @@ nav_msgs_generate_messages_nodejs/fast:
 .PHONY : nav_msgs_generate_messages_nodejs/fast
 
 #=============================================================================
+# Target rules for targets named fourth
+
+# Build rule for target.
+fourth: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 fourth
+.PHONY : fourth
+
+# fast build rule for target.
+fourth/fast:
+	$(MAKE) -f fourth/CMakeFiles/fourth.dir/build.make fourth/CMakeFiles/fourth.dir/build
+.PHONY : fourth/fast
+
+#=============================================================================
 # Target rules for targets named velocity_publisher
 
 # Build rule for target.
@@ -1058,6 +1071,7 @@ help:
 	@echo "... nav_msgs_generate_messages_cpp"
 	@echo "... arLocation"
 	@echo "... nav_msgs_generate_messages_nodejs"
+	@echo "... fourth"
 	@echo "... velocity_publisher"
 	@echo "... odom_subscriber"
 	@echo "... show_trajectory"

@@ -74,6 +74,14 @@
 /home/haiden/catkin_ws/build/ar_location/CMakeFiles/nav_msgs_generate_messages_cpp.dir
 /home/haiden/catkin_ws/build/ar_location/CMakeFiles/arLocation.dir
 /home/haiden/catkin_ws/build/ar_location/CMakeFiles/nav_msgs_generate_messages_nodejs.dir
+/home/haiden/catkin_ws/build/fourth/CMakeFiles/list_install_components.dir
+/home/haiden/catkin_ws/build/fourth/CMakeFiles/install.dir
+/home/haiden/catkin_ws/build/fourth/CMakeFiles/rebuild_cache.dir
+/home/haiden/catkin_ws/build/fourth/CMakeFiles/edit_cache.dir
+/home/haiden/catkin_ws/build/fourth/CMakeFiles/fourth.dir
+/home/haiden/catkin_ws/build/fourth/CMakeFiles/test.dir
+/home/haiden/catkin_ws/build/fourth/CMakeFiles/install/strip.dir
+/home/haiden/catkin_ws/build/fourth/CMakeFiles/install/local.dir
 /home/haiden/catkin_ws/build/learning_topic/CMakeFiles/list_install_components.dir
 /home/haiden/catkin_ws/build/learning_topic/CMakeFiles/install.dir
 /home/haiden/catkin_ws/build/learning_topic/CMakeFiles/rebuild_cache.dir
