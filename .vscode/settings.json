@@ -1,3 +1,5 @@
 {
-    "cmake.sourceDirectory": "/home/haiden/catkin_ws/src/learning_topic"
+    "cmake.sourceDirectory": "E:/智能机器人综合实验/catkin_ws/src",
+    "C_Cpp.default.compilerPath": "",
+    "C_Cpp.errorSquiggles": "disabled"
 }

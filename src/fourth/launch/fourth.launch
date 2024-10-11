@@ -7,16 +7,8 @@
   <arg name="cam_info_topic"       default="/camera/rgb/camera_info" />
   <arg name="output_frame"         default="/camera_rgb_optical_frame" />
  
- 
- 
-  <arg name="length" default="2.8" />
-  <arg name="width"  default="2.8" />
 
   <include file="$(find show_trajectory)/launch/show_trajectory_rviz.launch" />
-
-  <param name="length" type="double" value="$(arg length)" />
-  <param name="width"  type="double" value="$(arg width)"  />
-
 
 
   <node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen">

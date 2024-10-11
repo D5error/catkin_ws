@@ -15,24 +15,18 @@ void even();
 double radians(double deg);
 
 bool isMoving = false;
-double length;  
-double width; 
 ros::Publisher vel_pub;
 ros::Subscriber pose_sub;
 
 
 int main(int argc, char** argv)
 {
+    // 初始化
     ros::init(argc, argv, "fourth");
     ros::NodeHandle nh;
 
-    nh.getParam("/length", length);
-    nh.getParam("/width", width);
-
-    // 创建一个Publisher，主题名为 /mobile_base/commands/velocity
+    // 发布和订阅
     vel_pub = nh.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 10);
-
-
     pose_sub = nh.subscribe("/ar_pose_marker", SUBSCRIBER_BUFFER_SIZE, markersCallback);
 
     ros::spin();
@@ -47,6 +41,7 @@ void markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg)
     if (msg->markers.size() > 0 && !isMoving)
     {
         isMoving = true;
+        ros::Rate rate(RATE);
 
         // 二维码中心点相对相机坐标系的x坐标、y坐标和z坐标
         double x_ar, y_ar, z_ar;  
@@ -81,73 +76,13 @@ void odd() {
     int count = 0;
     while (ros::ok())
     {
-        ROS_INFO("count: %d", count);
-	    int isTurnRight = 1;
-        int time = 0;
-        if (count % 6 == 0)  // first edge
-        {
-	        isTurnRight = -1;
-            double seconds = length / (2 * SPEED);
-            time = int(seconds * RATE);
-        }
-        else if (count % 6 == 1)               // second edge
-        {
-            double seconds = width / (2 * SPEED);
-            time = int(seconds * RATE);
-        }
-	    else if (count % 6 == 2)               // 3ed edge
-        {
-            double seconds = width / (2 * SPEED);
-            time = int(seconds * RATE);
-        }
-	    else if (count % 6 == 3)               // 4th edge
-        {
-            double seconds = width / SPEED;
-            time = int(seconds * RATE);
-        }
-        else if (count % 6 == 4)               // 5th edge
-        {
-            double seconds = width / SPEED;
-            time = int(seconds * RATE);
-        }
-        else			               // 6th edge
-        {
-            double seconds = width / (2 * SPEED);
-            time = int(seconds * RATE);
-        }
+        goStraight(1.4);
+        turnAround(90);
+        goStraight(1.4);
+        turnAround(90);
+        goStraight(1.4);
 
-        // 设置循环频率
-        ros::Rate rate(RATE);
-
-
-        // 前进
-        ROS_INFO("Going Straight");
-        for (int i = 0; i < time; i++)
-        {
-            geometry_msgs::Twist vel_msg_move;
-            vel_msg_move.linear.x = SPEED;
-            vel_msg_move.angular.z = 0.0;
-            vel_pub.publish(vel_msg_move);
-            rate.sleep();
-        }
-
-        // 转弯
-        ROS_INFO("Turning");
-        for (int i = 0; i < 2 * RATE; i++){
-            geometry_msgs::Twist vel_msg_turn;
-            vel_msg_turn.linear.x = 0.0;
-            vel_msg_turn.angular.z = isTurnRight * radians(45);
-            vel_pub.publish(vel_msg_turn);
-            rate.sleep();
-        }
-
-
-        count = (count + 1) % 6;
-        if (count == 0)
-        {
-            ROS_INFO("Moving is over");
-            break;
-        }
+        ROS_INFO("Moving is over");
     }
 }
 
@@ -155,73 +90,44 @@ void even() {
     int count = 0;
     while (ros::ok())
     {
-        ROS_INFO("count: %d", count);
-	    int isTurnRight = 1;
-        int time = 0;
-        if (count % 6 == 0)  // first edge
-        {
-	        isTurnRight = -1;
-            double seconds = length / (2 * SPEED);
-            time = int(seconds * RATE);
-        }
-        else if (count % 6 == 1)               // second edge
-        {
-            double seconds = width / (2 * SPEED);
-            time = int(seconds * RATE);
-        }
-	    else if (count % 6 == 2)               // 3ed edge
-        {
-            double seconds = width / (2 * SPEED);
-            time = int(seconds * RATE);
-        }
-	    else if (count % 6 == 3)               // 4th edge
-        {
-            double seconds = width / SPEED;
-            time = int(seconds * RATE);
-        }
-        else if (count % 6 == 4)               // 5th edge
-        {
-            double seconds = width / SPEED;
-            time = int(seconds * RATE);
-        }
-        else			               // 6th edge
-        {
-            double seconds = width / (2 * SPEED);
-            time = int(seconds * RATE);
-        }
+        goStraight(1.4);
+        turnAround(90);
+        goStraight(1.4);
+        turnAround(90);
+        goStraight(1.4);
 
-        // 设置循环频率
-        ros::Rate rate(RATE);
+        ROS_INFO("Moving is over");
+    }
+}
 
+// 直走length
+void goStraight(double length) {
+    int time = 0;
+    double seconds = length / SPEED;
+    time = int(seconds * RATE);
 
-        // 前进
-        ROS_INFO("Going Straight");
-        for (int i = 0; i < time; i++)
-        {
-            geometry_msgs::Twist vel_msg_move;
-            vel_msg_move.linear.x = SPEED;
-            vel_msg_move.angular.z = 0.0;
-            vel_pub.publish(vel_msg_move);
-            rate.sleep();
-        }
+    ROS_INFO("直走%.2f", length);
 
-        // 转弯
-        ROS_INFO("Turning");
-        for (int i = 0; i < 2 * RATE; i++){
-            geometry_msgs::Twist vel_msg_turn;
-            vel_msg_turn.linear.x = 0.0;
-            vel_msg_turn.angular.z = isTurnRight * radians(-45);
-            vel_pub.publish(vel_msg_turn);
-            rate.sleep();
-        }
+    for (int i = 0; i < time; i++)
+    {
+        geometry_msgs::Twist vel_msg_move;
+        vel_msg_move.linear.x = SPEED;
+        vel_msg_move.angular.z = 0.0;
+        vel_pub.publish(vel_msg_move);
+        rate.sleep();
+    }
+}
 
+// 顺时针转动angular（角度制）
+void turnAround(double angular) {
+    ROS_INFO("顺时针转动%.2f度", angular);
+    geometry_msgs::Twist vel_msg_turn;
+    vel_msg_turn.linear.x = 0.0;
+    vel_msg_turn.angular.z = radians(angular / 2);
 
-        count = (count + 1) % 6;
-        if (count == 0)
-        {
-            ROS_INFO("Moving is over");
-            break;
-        }
+    for (int i = 0; i < 2 * RATE; i++){
+        vel_pub.publish(vel_msg_turn);
+        rate.sleep();
     }
 }
 
