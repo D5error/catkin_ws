@@ -13,6 +13,8 @@ ar_track_alvar_msgs/AlvarMarkers.h
 -
 geometry_msgs/Twist.h
 -
+math.h
+-
 
 /opt/ros/kinetic/include/ar_track_alvar_msgs/AlvarMarker.h
 string

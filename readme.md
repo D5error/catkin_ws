@@ -28,7 +28,10 @@
         roslaunch trajectory_following rectangle.launch
 
     * fourth
-        roslaunch fourth fourth.launch
+        1. 默认（仿真用）
+            roslaunch fourth fourth.launch
+        2. 指定二维码尺寸（实际用）
+            roslaunch fourth fourth.launch marker_size:=14
 
     * 识别二维码信息
         roslaunch ar_location get_ar_info.launch

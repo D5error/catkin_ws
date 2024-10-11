@@ -19,7 +19,7 @@ double getQRCodeX(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg);
 double getQRCodeY(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg);
 double getQRCodeZ(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg);
 void markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg);
-
+double square(double n);
 
 bool isMoving = false; // 是否正在移动
 bool isFinish = false; // 是否运动结束
@@ -31,7 +31,6 @@ double y_end; // 二维码起始点的y坐标
 double z_end; // 二维码起始点的z坐标
 ros::Publisher vel_pub; // 速度发布
 ros::Subscriber pose_sub; // 二维码订阅
-
 
 int main(int argc, char** argv)
 {
@@ -55,58 +54,79 @@ void markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg)
     if (msg->markers.size() > 0 && !isMoving)
     {
         isMoving = true;
-        ros::Rate rate(RATE);
         x_start = getQRCodeX(msg);
         y_start = getQRCodeY(msg);
         z_start = getQRCodeZ(msg);
         ROS_INFO("start: x = %.2f, y = %.2f, z = %.2f", x_start, y_start, z_start);
-        int id = getQRCodeId();
-
+        int id = getQRCodeId(msg);
+        ROS_INFO("id = %d", id);
         if (id % 2 == 0) {
             even();
         } else {
             odd();
         }
         isFinish = true;
-    } else if (isFinish) {
+    } else if (msg->markers.size() > 0 && isFinish) {
         x_end = getQRCodeX(msg);
         y_end = getQRCodeY(msg);
         z_end = getQRCodeZ(msg);
         ROS_INFO("end: x = %.2f, y = %.2f, z = %.2f", x_end, y_end, z_end);
 
         double error = sqrt(square(x_start - x_end) + square(y_start - y_end) + square(z_start - z_end));
-        ROS_INFO("error: %.2f", error);
+        ROS_INFO("error: %.2f mm", error * 1000);
+        
+        ros::shutdown();
     }
 }
 
 // 奇数运动
 void odd() {
-    int count = 0;
-    while (ros::ok())
-    {
-        goStraight(1.4);
-        turnAround(90);
-        goStraight(1.4);
-        turnAround(90);
-        goStraight(1.4);
+    ROS_INFO("Odd move");
+    // 1
+    goStraight(1.4);
+    turnAround(-90);
+    // 2
+    goStraight(1.4);
+    turnAround(90);
+    // 3
+    goStraight(1.4);
+    turnAround(90);
+    // 4
+    goStraight(2.8);
+    turnAround(90);
+    // 5
+    goStraight(2.8);
+    turnAround(90);
+    // 6
+    goStraight(1.4);
+    turnAround(90);
 
-        ROS_INFO("Moving is over");
-    }
+    ROS_INFO("Moving is over");
 }
 
 // 偶数运动
 void even() {
-    int count = 0;
-    while (ros::ok())
-    {
-        goStraight(1.4);
-        turnAround(90);
-        goStraight(1.4);
-        turnAround(90);
-        goStraight(1.4);
+    ROS_INFO("Even move");
+    // 1
+    goStraight(1.4);
+    turnAround(90);
+    // 2
+    goStraight(1.4);
+    turnAround(-90);
+    // 3
+    goStraight(1.4);
+    turnAround(-90);
+    // 4
+    goStraight(2.8);
+    turnAround(-90);
+    // 5
+    goStraight(2.8);
+    turnAround(-90);
+    // 6
+    goStraight(1.4);
+    turnAround(-90);
 
-        ROS_INFO("Moving is over");
-    }
+    ROS_INFO("Moving is over");
 }
 
 // 获取二维码id
@@ -131,11 +151,12 @@ double getQRCodeZ(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg) {
 
 // 直走length
 void goStraight(double length) {
+    ros::Rate rate(RATE);
     int time = 0;
     double seconds = length / SPEED;
     time = int(seconds * RATE);
 
-    ROS_INFO("直走%.2f", length);
+    ROS_INFO("go straight %.5f m", length);
 
     for (int i = 0; i < time; i++)
     {
@@ -147,9 +168,10 @@ void goStraight(double length) {
     }
 }
 
-// 顺时针转动angular（角度制）
+// 逆时针转动angular（角度制）
 void turnAround(double angular) {
-    ROS_INFO("顺时针转动%.2f度", angular);
+    ros::Rate rate(RATE);
+    ROS_INFO("Turn counterclockwise %.2f degrees", angular);
     geometry_msgs::Twist vel_msg_turn;
     vel_msg_turn.linear.x = 0.0;
     vel_msg_turn.angular.z = radians(angular / 2);
