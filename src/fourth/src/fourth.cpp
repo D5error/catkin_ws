@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <ar_track_alvar_msgs/AlvarMarkers.h>
 #include <geometry_msgs/Twist.h>
-
+#include <math.h>
 
 #define SUBSCRIBER_BUFFER_SIZE 1
 #define PI 3.1415926535
@@ -9,14 +9,28 @@
 #define SPEED 0.2
 
 
-void markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg);
 void odd();
 void even();
 double radians(double deg);
+void goStraight(double length);
+void turnAround(double angular);
+int getQRCodeId(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg);
+double getQRCodeX(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg);
+double getQRCodeY(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg);
+double getQRCodeZ(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg);
+void markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg);
 
-bool isMoving = false;
-ros::Publisher vel_pub;
-ros::Subscriber pose_sub;
+
+bool isMoving = false; // 是否正在移动
+bool isFinish = false; // 是否运动结束
+double x_start; // 二维码起始点的x坐标
+double y_start; // 二维码起始点的y坐标
+double z_start; // 二维码起始点的z坐标
+double x_end; // 二维码起始点的x坐标
+double y_end; // 二维码起始点的y坐标
+double z_end; // 二维码起始点的z坐标
+ros::Publisher vel_pub; // 速度发布
+ros::Subscriber pose_sub; // 二维码订阅
 
 
 int main(int argc, char** argv)
@@ -34,7 +48,7 @@ int main(int argc, char** argv)
     return 0;
 }
 
-
+// 二维码回调函数
 void markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg)
 {
     // 识别到二维码
@@ -42,36 +56,30 @@ void markersCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg)
     {
         isMoving = true;
         ros::Rate rate(RATE);
+        x_start = getQRCodeX(msg);
+        y_start = getQRCodeY(msg);
+        z_start = getQRCodeZ(msg);
+        ROS_INFO("start: x = %.2f, y = %.2f, z = %.2f", x_start, y_start, z_start);
+        int id = getQRCodeId();
 
-        // 二维码中心点相对相机坐标系的x坐标、y坐标和z坐标
-        double x_ar, y_ar, z_ar;  
-        x_ar = msg->markers[0].pose.pose.position.x;
-        y_ar = msg->markers[0].pose.pose.position.y;
-        z_ar = msg->markers[0].pose.pose.position.z;
-        ROS_INFO("x_ar: %.4f, y_ar: %.4f, z_ar: %.4f", x_ar, y_ar, z_ar);
-
-        int id;
-        id = msg->markers[0].id;
-        ROS_INFO("id: %d", id);
-
-        double x, y, z, w;
-        x = msg->markers[0].pose.pose.orientation.x;
-        y = msg->markers[0].pose.pose.orientation.y;
-        z = msg->markers[0].pose.pose.orientation.z;
-        w = msg->markers[0].pose.pose.orientation.w;
-        ROS_INFO("x: %.4f, y: %.4f, z: %.4f, w: %.4f", x, y, z, w);
-    
-        // even
         if (id % 2 == 0) {
             even();
         } else {
             odd();
         }
+        isFinish = true;
+    } else if (isFinish) {
+        x_end = getQRCodeX(msg);
+        y_end = getQRCodeY(msg);
+        z_end = getQRCodeZ(msg);
+        ROS_INFO("end: x = %.2f, y = %.2f, z = %.2f", x_end, y_end, z_end);
 
-        // 扫描二维码
+        double error = sqrt(square(x_start - x_end) + square(y_start - y_end) + square(z_start - z_end));
+        ROS_INFO("error: %.2f", error);
     }
 }
 
+// 奇数运动
 void odd() {
     int count = 0;
     while (ros::ok())
@@ -86,6 +94,7 @@ void odd() {
     }
 }
 
+// 偶数运动
 void even() {
     int count = 0;
     while (ros::ok())
@@ -98,6 +107,26 @@ void even() {
 
         ROS_INFO("Moving is over");
     }
+}
+
+// 获取二维码id
+int getQRCodeId(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg) {
+    return msg->markers[0].id;
+}
+
+// 获取二维码中心点相对相机坐标系的x坐标
+double getQRCodeX(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg) {
+    return msg->markers[0].pose.pose.position.x;
+}
+
+// 获取二维码中心点相对相机坐标系的y坐标
+double getQRCodeY(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg) {
+    return msg->markers[0].pose.pose.position.y;
+}
+
+// 获取二维码中心点相对相机坐标系的z坐标
+double getQRCodeZ(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& msg) {
+        return msg->markers[0].pose.pose.position.z;
 }
 
 // 直走length
@@ -131,8 +160,12 @@ void turnAround(double angular) {
     }
 }
 
-double radians(double deg) 
-{
+// 角度制转弧度制
+double radians(double deg) {
     double rad = deg * PI / 180;
     return rad;
+}
+
+double square(double n) {
+    return n * n;
 }
